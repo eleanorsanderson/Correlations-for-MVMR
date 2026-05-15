@@ -9,7 +9,7 @@ bibliography: references.bib
 
 ## Covariance and Phenotypic correlations in MVMR
 
-Summary data multivariable Mendelian randomization (MVMR) requires estimation of the covariance between the effect of each instrument on each exposure included in the estimation for effective strength testing, heterogeneity estimation and pleiotropy robust estimation.[@Sanderson2021]
+Summary data multivariable Mendelian randomization (MVMR) requires estimation of the covariance between the effect of each instrument on each exposure included in the MVMR model for effective strength testing, heterogeneity estimation and pleiotropy robust estimation.[@Sanderson2021]
 
 This covariance is dependent on the level of sample overlap between the GWAS used for each exposure and is zero if there is no sample overlap. In that case 'gencov = 0' can be used in the 'pleiotropy_mvmr' and 'strength_mvmr' functions in the MVMR package.
 
@@ -32,7 +32,7 @@ The estimate of the covariance $\hat{\sigma}_{X_1,X_2}$ is not available from st
 
 1.  *Estimating the covariances from individual level data.*
 
-    If there is complete sample overlap between the exposure samples and the individual level that generated the GWAS summary statistics is available then the covariance required can be estimated directly from the individual level data by obtaining the covariance ($\hat{\sigma}_{12,i}$) between the residuals $\epsilon_{1i}$ and $\epsilon_{2i}$ from the regressions;
+    If there is complete sample overlap between the exposure samples, and the individual level data on which the GWAS summary statistics were generated is available, then the covariance required can be estimated directly from the individual level data by obtaining the covariance ($\hat{\sigma}_{12,i}$) between the residuals $\epsilon_{1i}$ and $\epsilon_{2i}$ from the regressions;
 
     $$x_1 = \alpha_1 + \gamma_{1i} G_i + \epsilon_{1i}$$
 
@@ -40,7 +40,7 @@ The estimate of the covariance $\hat{\sigma}_{X_1,X_2}$ is not available from st
 
     $$x_2 = \alpha_2 + \gamma_{2i}G_i + \epsilon_{2i}$$
 
-    These estimates can be obtained from the 'snpcov_mvmr' function in the MVMR package. Estimation in this way does not account for population structure controls included in the original GWAS which may the covariance of the resulting residuals.
+    These estimates can be obtained from the 'snpcov_mvmr' function in the MVMR package. Estimation in this way does not account for population structure controls included in the original GWAS which may affect the estimates of the covariance of the resulting residuals.
 
 2.  ***RECOMMENDED** Estimate* $\lambda$
 
@@ -65,7 +65,7 @@ The estimate of the covariance $\hat{\sigma}_{X_1,X_2}$ is not available from st
 
     $\rho$ is the correlation between $X_1$ and $X_2$, $n_{X_1}$ is the sample size for $X_1$, $n_{X_2}$ is the sample size for $X_2$ and $n_{overlap}$ is the sample size for the overlap between the sample for $X_1$ and $X_2$.
 
-    Forde et al 2026[@Forde2026] provide a function to estimate this value of $\lambda$ using the null SNPs for both $X_1$ and $X_2$ from the GWAS summary statistics. It therefore does not require access to any summary level data. This method works best if the full summary statistics are available. The function is 'est_lambda' in <https://github.com/amandaforde/mr.simss/tree/main/R>.
+    Forde et al 2026[@Forde2026] provide a function to estimate this value of $\lambda$ using the null SNPs for both $X_1$ and $X_2$ from the GWAS summary statistics. It therefore does not require access to any individual level data. This method works best if the full summary statistics are available. The function is 'est_lambda' in <https://github.com/amandaforde/mr.simss/tree/main/R>.
 
     This value of $\lambda$ should be used in the 'phenocov_mvmr' function as the parameter 'pcor' to calculate the values $\hat{\sigma}_{X_1,X_2}$ for use in the required functions in the MVMR R package.
 
@@ -75,4 +75,4 @@ The estimate of the covariance $\hat{\sigma}_{X_1,X_2}$ is not available from st
 
     $$\lambda = \rho $$
 
-    and so an estimate of $\rho$ obtained from the phenotypic data that was used to generate the GWAS summary statistics can be used in place of $\lambda$.
+    and so an estimate of $\rho$ obtained from the phenotypic data that was used to generate the GWAS summary statistics can be used in place of $\lambda$. This requires access to the individual level data that was used to estimate the GWAS summary statistics.
