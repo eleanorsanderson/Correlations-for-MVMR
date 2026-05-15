@@ -44,7 +44,7 @@ The estimate of the covariance $\hat{\sigma}_{X_1,X_2}$ is not available from st
 
 2.  ***RECOMMENDED** Estimate* $\lambda$
 
-    Forde et al 2026[@Forde2026] (function 'est_lambda' in <https://github.com/amandaforde/mr.simss/tree/main/R>). The distribution of the estimated effects can be rewritten as;
+    The distribution of the estimated effects can be rewritten as;
 
     $$\left[\begin{matrix}
     \hat{\beta}_{X_1}\\
