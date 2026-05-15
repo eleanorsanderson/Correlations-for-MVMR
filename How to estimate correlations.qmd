@@ -1,0 +1,78 @@
+---
+title: "Estimating correlations"
+author: "Eleanor Sanderson"
+date: "15 05 2026"
+format: html
+editor: visual
+bibliography: references.bib
+---
+
+## Covariance and Phenotypic correlations in MVMR
+
+Summary data multivariable Mendelian randomization (MVMR) requires estimation of the covariance between the effect of each instrument on each exposure included in the estimation for effective strength testing, heterogeneity estimation and pleiotropy robust estimation.[@Sanderson2021]
+
+This covariance is dependent on the level of sample overlap between the GWAS used for each exposure and is zero if there is no sample overlap. In that case 'gencov = 0' can be used in the 'pleiotropy_mvmr' and 'strength_mvmr' functions in the MVMR package.
+
+If there is any level of sample overlap between the samples used for the exposure GWAS then accurate estimation of the Q-statistic, conditional F-statistics and robust estimation with weak or pleiotropic SNPs (under the assumption of balanced pleiotropy) relies on an estimation of the covariance between the errors in the GWAS results between the exposures for each SNP. In a MVMR estimation with two exposures $X_1$ and $X_2$ the estimated effects $\hat{\beta}_1$ and $\hat{\beta}_2$ are distributed as;
+
+$$\left[\begin{matrix}
+\hat{\beta}_{X_1}\\
+\hat{\beta}_{X_2}
+\end{matrix}\right] \sim N\left(\left[
+\begin{matrix}
+\beta_{X_1}\\
+\beta_{X_2}
+\end{matrix}\right],\left[
+\begin{matrix}
+\sigma_{x_1}^2 & \sigma_{X_1,X_2}\\
+\sigma_{X_1,X_2} & \sigma_{X_2}^2
+\end{matrix}\right]\right)$$
+
+The estimate of the covariance $\hat{\sigma}_{X_1,X_2}$ is not available from standard GWAS summary statistics and so needs to be obtained elsewhere. This can be done in a couple of different ways;
+
+1.  *Estimating the covariances from individual level data.*
+
+    If there is complete sample overlap between the exposure samples and the individual level that generated the GWAS summary statistics is available then the covariance required can be estimated directly from the individual level data by obtaining the covariance ($\hat{\sigma}_{12,i}$) between the residuals $\epsilon_{1i}$ and $\epsilon_{2i}$ from the regressions;
+
+    $$x_1 = \alpha_1 + \gamma_{1i} G_i + \epsilon_{1i}$$
+
+    and
+
+    $$x_2 = \alpha_2 + \gamma_{2i}G_i + \epsilon_{2i}$$
+
+    These estimates can be obtained from the 'snpcov_mvmr' function in the MVMR package. Estimation in this way does not account for population structure controls included in the original GWAS which may the covariance of the resulting residuals.
+
+2.  ***RECOMMENDED** Estimate* $\lambda$
+
+    Forde et al 2026[@Forde2026] (function 'est_lambda' in <https://github.com/amandaforde/mr.simss/tree/main/R>). The distribution of the estimated effects can be rewritten as;
+
+    $$\left[\begin{matrix}
+    \hat{\beta}_{X_1}\\
+    \hat{\beta}_{X_2}
+    \end{matrix}\right] \sim N\left(\left[
+    \begin{matrix}
+    \beta_{X_1}\\
+    \beta_{X_2}
+    \end{matrix}\right],\left[
+    \begin{matrix}
+    \sigma_{x_1}^2 & \lambda\sigma_{X_1}\sigma_{X_2}\\
+    \lambda\sigma_{X_1}\sigma_{X_2} & \sigma_{X_2}^2
+    \end{matrix}\right]\right)$$
+
+    where;
+
+    $$\lambda = \frac{n_{overlap}\rho}{\sqrt{n_{X_1}n_{X_2}}}$$
+
+    $\rho$ is the correlation between $X_1$ and $X_2$, $n_{X_1}$ is the sample size for $X_1$, $n_{X_2}$ is the sample size for $X_2$ and $n_{overlap}$ is the sample size for the overlap between the sample for $X_1$ and $X_2$.
+
+    Forde et al 2026[@Forde2026] provide a function to estimate this value of $\lambda$ using the null SNPs for both $X_1$ and $X_2$ from the GWAS summary statistics. It therefore does not require access to any summary level data. This method works best if the full summary statistics are available. The function is 'est_lambda' in <https://github.com/amandaforde/mr.simss/tree/main/R>.
+
+    This value of $\lambda$ should be used in the 'phenocov_mvmr' function as the parameter 'pcor' to calculate the values $\hat{\sigma}_{X_1,X_2}$ for use in the required functions in the MVMR R package.
+
+3.  *Obtain* $\rho$ *from phenotypic data.*
+
+    If there is full sample overlap between the GWAS for $X_1$ and $X_2$ then
+
+    $$\lambda = \rho $$
+
+    and so an estimate of $\rho$ obtained from the phenotypic data that was used to generate the GWAS summary statistics can be used in place of $\lambda$.
